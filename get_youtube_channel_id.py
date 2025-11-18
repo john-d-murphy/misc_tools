@@ -70,10 +70,6 @@ if __name__ == "__main__":
     channel_to_check = sys.argv[1]
     url_to_check = "https://www.youtube.com/@" + channel_to_check
 
-    # Simple check to prepend https:// if it's missing, for robustness
-    if not url_to_check.startswith(("http://", "https://")):
-        url_to_check = "https://" + url_to_check
-
     channel_id, rss_url = get_youtube_channel_id(url_to_check)
 
     print("\n--- Results ---")
