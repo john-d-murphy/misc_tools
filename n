@@ -1,0 +1,112 @@
+#!/usr/bin/env bash
+# Quick Markdown note dropper.
+# Usage:
+#   note "idea goes here"
+#   note -t music,idea "riff in D dorian"
+#   echo "piped body" | note -n "Title from flag"
+#   note -e "start a longer thought in $EDITOR"
+
+set -Eeuo pipefail
+
+NOTES_DIR="${NOTES_DIR:-$HOME/Dropbox/notes/inbox}"   # set this to your site’s inbox dir
+DEFAULT_TAGS="${DEFAULT_TAGS:-idea}"
+EDITOR_BIN="${VISUAL:-${EDITOR:-vim}}"
+
+usage() {
+  cat <<'USAGE'
+note [-e] [-t tag1,tag2] [-D dir] [-n "title"] [text...]
+  -e          open $EDITOR after creating the file
+  -t tags     comma-separated tags (default: idea)
+  -D dir      override output directory (default: $NOTES_DIR)
+  -n title    set title explicitly; otherwise inferred from text
+If no text is provided and nothing is piped on stdin, an empty note is created (use -e to edit).
+USAGE
+}
+
+slugify() {
+  # lowercase, non-alnum -> -, trim duplicate/edge dashes
+  printf '%s' "$1" \
+  | tr '[:upper:]' '[:lower:]' \
+  | sed -E 's/[^a-z0-9]+/-/g; s/^-+//; s/-+$//; s/-+/-/g'
+}
+
+now_iso_tz() {
+  # RFC3339-ish with timezone colon (e.g., -04:00)
+  date +"%Y-%m-%dT%H:%M:%S%z" | sed -E 's/([+-][0-9]{2})([0-9]{2})$/\1:\2/'
+}
+
+to_yaml_list() {
+  # turn "a,b c, d" -> "a", "b c", "d"
+  awk -v str="$1" 'BEGIN{
+    n=split(str,a,",");
+    for(i=1;i<=n;i++){
+      gsub(/^[[:space:]]+|[[:space:]]+$/,"",a[i]);
+      printf("%s\"%s\"", (i>1?", ":""), a[i]);
+    }
+  }'
+}
+
+edit_after=0
+tags="$DEFAULT_TAGS"
+outdir="$NOTES_DIR"
+title=""
+
+while getopts ":et:D:n:h" opt; do
+  case "$opt" in
+    e) edit_after=1 ;;
+    t) tags="$OPTARG" ;;
+    D) outdir="$OPTARG" ;;
+    n) title="$OPTARG" ;;
+    h) usage; exit 0 ;;
+    \?) echo "Unknown option: -$OPTARG" >&2; usage; exit 2 ;;
+  esac
+done
+shift $((OPTIND-1))
+
+# Collect content: args > stdin > empty
+content=""
+if [ $# -gt 0 ]; then
+  content="$*"
+elif [ ! -t 0 ]; then
+  content="$(cat)"
+fi
+
+# Title inference
+if [ -z "$title" ]; then
+  if [ -n "$content" ]; then
+    title="$(printf '%s' "$content" | head -c 80 | tr '\n' ' ')"
+  else
+    title="Quick note"
+  fi
+fi
+
+stamp="$(date +%Y%m%d-%H%M%S)"
+ymd_path="$(date +%Y/%m/%d)"
+slug="$(slugify "$title")"
+mkdir -p "$outdir/$ymd_path"
+file="$outdir/$ymd_path/${stamp}-${slug}.md"
+
+created="$(now_iso_tz)"
+note_id="$(command -v uuidgen >/dev/null && uuidgen || cat /proc/sys/kernel/random/uuid 2>/dev/null || echo "${stamp}-$$")"
+tags_yaml="$(to_yaml_list "$tags")"
+
+{
+  echo '---'
+  printf 'id: "%s"\n' "$note_id"
+  printf 'title: "%s"\n' "$title"
+  printf 'created: "%s"\n' "$created"
+  echo 'type: "note"'
+  echo 'status: "inbox"'
+  echo 'source: "cli"'
+  printf 'tags: [%s]\n' "$tags_yaml"
+  echo '---'
+  echo
+  [ -n "$content" ] && printf '%s\n' "$content"
+} > "$file"
+
+if (( edit_after )); then
+  "$EDITOR_BIN" "$file"
+fi
+
+printf '%s\n' "$file"
+
