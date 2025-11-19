@@ -1,3 +1,4 @@
+#!/usr/bin/python
 """
 Little script to get YouTube RSS urls for tools like newsboat.
 Helps me keep my feed a little more concentrated and updated periodically
