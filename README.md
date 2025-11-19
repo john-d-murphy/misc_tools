@@ -19,7 +19,7 @@ This Bash script is a CLI tool for quickly creating Markdown notes with YAML fro
 
 **Usage**
 ```bash
-note -t idea,work -n "My quick thought" "This is the body of the note"
+n -t idea,work -n "My quick thought" "This is the body of the note"
 ```
 
 ### get_youtube_channel_id.py
