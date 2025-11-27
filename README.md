@@ -42,3 +42,12 @@ This Bash script uses the GitHub CLI to list available open-source licenses, let
 bash pick-license.sh
 ```
 
+### weather.sh
+
+**Summary**
+This Bash script periodically clears the terminal and displays the weather from wttr.in at specific times of day (06:00, 09:00, 12:00, 15:00, 18:00), looping indefinitely and calculating the next scheduled run based on the current time.
+
+**Usage**
+```bash
+bash script.sh
+```
