@@ -1,6 +1,8 @@
 ## Personal Tools
 
-Miscellaneous shell and python scripts. May be useful to others so I'm sharing here.
+Miscellaneous shell and python scripts. May be useful to others so I'm sharing here. Summaries of
+the tools are AI generated, so please excuse any weird formality and/or plastic tone in the
+summaries. Tools should *hopefully* be useful to you if you have similar needs to me.
 
 ### summarize_code.sh
 
