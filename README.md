@@ -49,5 +49,14 @@ This Bash script periodically clears the terminal and displays the weather from 
 
 **Usage**
 ```bash
-bash script.sh
+bash weather.sh
+```
+### cal.sh
+
+**Summary**
+This Bash script repeatedly clears the terminal and runs `gcalcli calw` to display a weekly calendar, refreshing exactly at the top of every hour indefinitely, handling failures without exiting.
+
+**Usage**
+```bash
+bash cal.sh
 ```
