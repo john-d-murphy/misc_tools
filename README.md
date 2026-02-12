@@ -62,3 +62,13 @@ This Bash script repeatedly clears the terminal and runs `gcalcli calw` to displ
 ```bash
 bash cal.sh
 ```
+
+### d
+
+**Summary**
+This Bash script provides a colorized command-line dictionary and thesaurus client using dict.org, supporting WordNet by default, Moby thesaurus, specific databases, and listing available databases, with a curl fallback if the dict client is unavailable.
+
+**Usage**
+```bash
+./def example_word thes
+```
