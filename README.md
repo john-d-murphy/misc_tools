@@ -66,7 +66,7 @@ bash cal.sh
 ### d
 
 **Summary**
-This Bash script provides a colorized command-line dictionary and thesaurus client using dict.org, supporting WordNet by default, Moby thesaurus, specific databases, and listing available databases, with a curl fallback if the dict client is unavailable.
+This Bash script provides a colorized command-line dictionary/thesaurus client for dict.org, defaulting to WordNet, with options to query specific databases, search all, or list available databases, using the dict client or curl as a fallback.
 
 **Usage**
 ```bash

@@ -25,6 +25,7 @@ readonly BOLD_YELLOW='\x1b[1;33m'
 readonly GREEN='\x1b[32m'
 readonly ITALIC='\x1b[3m'
 readonly RESET='\x1b[0m'
+readonly BOLD_MAGENTA='\x1b[1;35m'
 
 usage() {
     echo "Usage: $(basename "$0") <word> [thes|all|<database>]"
@@ -41,7 +42,8 @@ usage() {
 colorize() {
     sed -E \
         -e "s/^(From .*)$/${DIM}\1${RESET}/" \
-        -e "s/^( *)(n|v|adj|adv)( [0-9])/${BOLD_CYAN}\2${RESET}\3/" \
+	-e "s/^  ([a-z][-a-z_]*)$/${BOLD_MAGENTA}\U\1\E${RESET}\n${DIM}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}\n/" \
+        -e "s/^( *)(n|v|adj|adv)( )([0-9]+)/${BOLD_CYAN}\2\n${RESET}${BOLD_YELLOW}\4${RESET}/" \
         -e "s/^( *)([0-9]+):/${BOLD_YELLOW}\2:${RESET}/" \
         -e "s/\{([^}]+)\}/${GREEN}\1${RESET}/g" \
         -e "s/\"([^\"]+)\"/${ITALIC}\"\1\"${RESET}/g" \
@@ -76,6 +78,11 @@ list_dbs() {
 
 [[ $# -lt 1 ]] && usage
 
+case "$1" in
+    -h|--help) usage ;;
+    --dbs)     list_dbs; exit 0 ;;
+esac
+
 if [[ "$1" == "--dbs" ]]; then
     list_dbs
     exit 0
@@ -90,11 +97,11 @@ case "$db" in
     webster|web)    db="gcide" ;;
 esac
 
-result=$(lookup "$word" "$db")
+result=$(lookup "$word" "$db" || true)
 
 if [[ -z "$result" ]]; then
     echo -e "${BOLD_YELLOW}No definition found for '${word}'${RESET}" >&2
-    echo -e "${DIM}Try: $(basename "$0") ${word} all${RESET}" >&2
+    echo -e "Try: $(basename "$0") ${word} all" >&2
     exit 1
 fi
 
