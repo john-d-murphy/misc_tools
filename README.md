@@ -72,3 +72,13 @@ This Bash script provides a colorized command-line dictionary/thesaurus client f
 ```bash
 ./def example_word thes
 ```
+
+### c
+
+**Summary**
+This Bash script is a command-line helper for querying cheat.sh; it takes a programming language and a query, formats the query, and fetches the corresponding cheat sheet via curl, or opens the cheat.sh main page when called without arguments.
+
+**Usage**
+```bash
+./c bash "add two numbers"
+```
